@@ -24,7 +24,7 @@ class CancelOrderButton extends GetWidget<HomeController> {
           onPressed: !controller.isOrderActive.value
               ? null
               : () {
-                  Get.snackbar("Notification", "Cancel Order");
+                  Get.snackbar("Notification", "Cancel Order",backgroundColor: Colors.red);
                   controller.isOrderActive.value=false;
                   // Open sell order
                 },

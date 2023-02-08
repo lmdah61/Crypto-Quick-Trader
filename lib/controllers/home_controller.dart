@@ -5,72 +5,67 @@ import '../services/binance_service.dart';
 import '../utils/constants.dart';
 
 class HomeController extends GetxController {
-  GetStorage box = GetStorage();
-  late BinanceService _binanceService;
+  var storage = GetStorage();
+  late BinanceService _binanceService = BinanceService();
 
   var isOrderActive = false.obs;
-  late String activeOrderId = '';
+  var activeOrderId = '';
 
   var initPrice = 0.0.obs;
   var targetValue = 0.0.obs;
   var stopValue = 0.0.obs;
 
-  Future<void> init() async {
-    // Get previous order data from storage
-    loadOrderData();
+  init() async {
     // Check if an order is already active
-    if (!isThereAnOrderStillRunning()) {
-      isOrderActive = false.obs;
+    isThereAnOrderStillRunning();
+  }
+
+  isThereAnOrderStillRunning() async {
+    await loadOrderData();
+    bool orderIsRunning = await _binanceService.isOrderActive(activeOrderId);
+    if (!orderIsRunning) {
+      isOrderActive.value = false;
       activeOrderId = '';
       storeOrderData();
     }
   }
 
-  void openOrder() async {
-    cleanEverything();
+  openOrder() async {
     double price = await _binanceService.getCurrentPrice();
     double quantity = await _binanceService.getFreeBitcoinQuantity();
     String orderId = await _binanceService.openOcoOrder(
-        symbol: 'BTCUSDT',
-        quantity: quantity,
-        targetPrice: price * 1.003,
-        stopPrice: price * 0.99);
+      symbol: 'BTCUSDT',
+      quantity: quantity,
+      targetPrice: price * 1.003,
+      stopPrice: price * 0.99,
+    );
 
-    if (orderId != null) {
-      activeOrderId = orderId;
-      isOrderActive.value = true;
-      storeOrderData();
-    } else {
-      throw Exception("Order Failed");
-    }
-  }
-
-  void sellEverything() async {
-    await _binanceService.sellAsset('BTC');
-  }
-
-  void cancelOrder() async {
-    await _binanceService.cancelOrder(activeOrderId);
-  }
-
-  void cleanEverything() {
-    isOrderActive.value = false;
-    activeOrderId = '';
+    activeOrderId = orderId;
+    isOrderActive.value = true;
     storeOrderData();
   }
 
-  void storeOrderData() {
-    box.write(ORDER_STORAGE_ID, activeOrderId);
-    box.write(ORDER_STORAGE_STATUS, isOrderActive);
+  storeOrderData() async {
+    storage.write(ORDER_STORAGE_ID, activeOrderId);
+    storage.write(ORDER_STORAGE_STATUS, isOrderActive);
   }
 
-  void loadOrderData() {
-    activeOrderId = box.read(ORDER_STORAGE_ID) ?? '';
-    isOrderActive.value = box.read(ORDER_STORAGE_STATUS) ?? false;
+  loadOrderData() async {
+    activeOrderId = storage.read(ORDER_STORAGE_ID) ?? '';
+    isOrderActive.value = storage.read(ORDER_STORAGE_STATUS) ?? false;
   }
 
-  isThereAnOrderStillRunning() async {
-    bool isOrderActive = await _binanceService.isOrderActive(activeOrderId);
-    return isOrderActive;
-  }
+// void sellEverything() async {
+//   await _binanceService.sellAsset('BTC');
+// }
+//
+// void cancelOrder() async {
+//   await _binanceService.cancelOrder(activeOrderId);
+// }
+//
+// void cleanEverything() {
+//   isOrderActive.value = false;
+//   activeOrderId = '';
+//   storeOrderData();
+// }
 }

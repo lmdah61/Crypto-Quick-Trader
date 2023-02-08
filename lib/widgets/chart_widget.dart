@@ -46,6 +46,7 @@ class BinanceChart extends StatelessWidget {
 
     var controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
       ..setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36")
       ..setNavigationDelegate(
         NavigationDelegate(

@@ -24,13 +24,11 @@ class SellCoinsButton extends GetWidget<HomeController> {
             onPressed: !controller.isOrderActive.value
                 ? null
                 : () {
-              Get.snackbar("Notification", "Sell Order");
-              controller.isOrderActive.value=false;
+              Get.snackbar("Notification", "Sell Order",backgroundColor: Colors.green);
               // Open sell order
+              controller.isOrderActive.value=false;
             },
             child: Text("Sell Order"),
-            //disabledElevation: 0,
-            //disabledColor: Colors.grey.withOpacity(0.5),
           ),
         ),
     );

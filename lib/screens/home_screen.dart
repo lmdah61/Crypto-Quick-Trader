@@ -1,14 +1,13 @@
-import 'package:crypto_quick_trader/widgets/cancel_button_widget.dart';
-import 'package:crypto_quick_trader/widgets/sell_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../controllers/home_controller.dart';
+import '../widgets/cancel_button_widget.dart';
 import '../widgets/chart_widget.dart';
 import '../widgets/levelbar_widget.dart';
 import '../widgets/order_button_widget.dart';
+import '../widgets/sell_button_widget.dart';
 
-class HomeScreen extends GetView<HomeController> {
+class HomeScreen extends GetView {
   const HomeScreen({super.key});
 
   @override
@@ -27,7 +26,7 @@ class HomeScreen extends GetView<HomeController> {
       ),
       body: Column(
         children: [
-          Expanded(child: BinanceChart()),
+          const Expanded(child: BinanceChart()),
           LevelBar(),
         ],
       ),
