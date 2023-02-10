@@ -16,22 +16,21 @@ class CancelOrderButton extends GetWidget<HomeController> {
         child: ElevatedButton(
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.resolveWith(
-                  (states) => states.contains(MaterialState.pressed) || !controller.isOrderActive.value
+              (states) => states.contains(MaterialState.pressed) ||
+                      !controller.isOrderActive.value
                   ? null
                   : Colors.red,
             ),
           ),
           onPressed: !controller.isOrderActive.value
               ? null
-              : () {
-                  Get.snackbar("Notification", "Cancel Order",backgroundColor: Colors.red);
-                  controller.isOrderActive.value=false;
-                  // Open sell order
+              : () async {
+                  await controller.cancelOrder();
+                  Get.snackbar("Notification", "Cancel Order",
+                      backgroundColor: Colors.red);
+                  // Cancel order and keep the coins
                 },
           child: Text("Cancel Order"),
-
-          //disabledElevation: 0,
-          //disabledColor: Colors.grey.withOpacity(0.5),
         ),
       ),
     );

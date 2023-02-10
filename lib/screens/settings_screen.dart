@@ -40,12 +40,22 @@ class SettingsScreen extends GetView<SettingsController> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              child: const Text('Save'),
-              onPressed: () {
-                controller.saveSettings();
-                Get.snackbar("Notification", "API values saved", snackPosition: SnackPosition.BOTTOM);
-// Save the API key and secret to device storage or to a secure server
-              },
+              style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.resolveWith(
+                  (states) => states.contains(MaterialState.pressed) ||
+                          controller.isThereAnOrderStillRunning()
+                      ? null
+                      : Colors.orange,
+                ),
+              ),
+              onPressed: controller.isThereAnOrderStillRunning()
+                  ? null
+                  : () async {
+                      // Cancel Order and sell the coins
+                      controller.saveSettings();
+                      Get.snackbar("Notification", "API data saved",);
+                    },
+              child: Text("Save"),
             ),
           ],
         ),

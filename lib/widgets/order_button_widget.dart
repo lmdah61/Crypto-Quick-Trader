@@ -8,8 +8,6 @@ class OpenOrderButton extends GetWidget<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    //final isOrderActive = controller.isOrderActive.value;
-
     return Obx(
       () => SizedBox(
         width: 120,
@@ -24,10 +22,11 @@ class OpenOrderButton extends GetWidget<HomeController> {
           ),
           onPressed: controller.isOrderActive.value
               ? null
-              : () {
-                  Get.snackbar("Notification", "Open Order", backgroundColor: Colors.orange);
+              : () async {
                   // Open main order
-                  controller.openOrder();
+                  await controller.openOrder();
+                  Get.snackbar("Notification", "Open Order",
+                      backgroundColor: Colors.orange);
                 },
           child: const Text("Open Order"),
         ),

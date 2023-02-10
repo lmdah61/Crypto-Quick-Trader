@@ -10,27 +10,29 @@ class SellCoinsButton extends GetWidget<HomeController> {
   Widget build(BuildContext context) {
     //final isOrderActive = false;
 
-    return  Obx(()=>
-        SizedBox(
-          width: 120,
-          child: ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.resolveWith(
-                    (states) => states.contains(MaterialState.pressed) || !controller.isOrderActive.value
-                    ? null
-                    : Colors.green,
-              ),
+    return Obx(
+      () => SizedBox(
+        width: 120,
+        child: ElevatedButton(
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.resolveWith(
+              (states) => states.contains(MaterialState.pressed) ||
+                      !controller.isOrderActive.value
+                  ? null
+                  : Colors.green,
             ),
-            onPressed: !controller.isOrderActive.value
-                ? null
-                : () {
-              Get.snackbar("Notification", "Sell Order",backgroundColor: Colors.green);
-              // Open sell order
-              controller.isOrderActive.value=false;
-            },
-            child: Text("Sell Order"),
           ),
+          onPressed: !controller.isOrderActive.value
+              ? null
+              : () async {
+                  // Cancel Order and sell the coins
+                  await controller.sellEverything();
+                  Get.snackbar("Notification", "Sell Order",
+                      backgroundColor: Colors.green);
+                },
+          child: Text("Sell Order"),
         ),
+      ),
     );
   }
 }

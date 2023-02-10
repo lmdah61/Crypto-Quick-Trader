@@ -12,6 +12,10 @@ const String ORDER_STORAGE_ID = 'order_id';
 
 const String ORDER_STORAGE_STATUS = 'order_status';
 
+const double TARGET = 1.003;
+
+const double STOP_LOSS = 0.99;
+
 class Constants {
   static final String appName = 'Bitcoin Price Chart';
   static final String chartTitle = '5 minute bitcoin price chart';

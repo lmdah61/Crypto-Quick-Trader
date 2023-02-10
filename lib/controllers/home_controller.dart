@@ -6,7 +6,7 @@ import '../utils/constants.dart';
 
 class HomeController extends GetxController {
   var storage = GetStorage();
-  late BinanceService _binanceService = BinanceService();
+  final BinanceService _binanceService = BinanceService();
 
   var isOrderActive = false.obs;
   var activeOrderId = '';
@@ -22,23 +22,26 @@ class HomeController extends GetxController {
 
   isThereAnOrderStillRunning() async {
     await loadOrderData();
-    bool orderIsRunning = await _binanceService.isOrderActive(activeOrderId);
+    bool orderIsRunning = await _binanceService.isOcoOrderActive(activeOrderId);
     if (!orderIsRunning) {
-      isOrderActive.value = false;
-      activeOrderId = '';
-      storeOrderData();
+      clean();
     }
   }
 
   openOrder() async {
-    double price = await _binanceService.getCurrentPrice();
-    double quantity = await _binanceService.getFreeBitcoinQuantity();
-    String orderId = await _binanceService.openOcoOrder(
+    await _binanceService.updateAPIKeys();
+    double price = await _binanceService.getCurrentBTCPrice();
+    double quantity = await _binanceService.getFreeBTCQuantity();
+    var orderId = await _binanceService.openOcoOrder(
       symbol: 'BTCUSDT',
       quantity: quantity,
       targetPrice: price * 1.003,
       stopPrice: price * 0.99,
     );
+
+    initPrice.value = price;
+    targetValue.value = price * 1.003;
+    stopValue.value = price * 0.99;
 
     activeOrderId = orderId;
     isOrderActive.value = true;
@@ -47,7 +50,7 @@ class HomeController extends GetxController {
 
   storeOrderData() async {
     storage.write(ORDER_STORAGE_ID, activeOrderId);
-    storage.write(ORDER_STORAGE_STATUS, isOrderActive);
+    storage.write(ORDER_STORAGE_STATUS, isOrderActive.value);
   }
 
   loadOrderData() async {
@@ -55,17 +58,25 @@ class HomeController extends GetxController {
     isOrderActive.value = storage.read(ORDER_STORAGE_STATUS) ?? false;
   }
 
-// void sellEverything() async {
-//   await _binanceService.sellAsset('BTC');
-// }
-//
-// void cancelOrder() async {
-//   await _binanceService.cancelOrder(activeOrderId);
-// }
-//
-// void cleanEverything() {
-//   isOrderActive.value = false;
-//   activeOrderId = '';
-//   storeOrderData();
-// }
+  sellEverything() async {
+    await _binanceService.sellAllBTC();
+    clean();
+  }
+
+  cancelOrder() async {
+    await _binanceService.cancelOrder(activeOrderId);
+    clean();
+  }
+
+  void clean() {
+    isOrderActive.value = false;
+    activeOrderId = '';
+    storeOrderData();
+  }
+
+  getCurrentPrice() async {
+    return await _binanceService.getCurrentBTCPrice();
+  }
+
+
 }
