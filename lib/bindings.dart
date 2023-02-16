@@ -6,13 +6,13 @@ import 'controllers/home_controller.dart';
 class HomeScreenBindings implements Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => HomeController());
+    Get.put(HomeController());
   }
 }
 
 class SettingsScreenBindings implements Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => SettingsController());
+    Get.put(SettingsController());
   }
 }

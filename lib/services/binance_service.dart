@@ -14,33 +14,40 @@ class BinanceService {
   BinanceService() {
     try {
       _binanceApi = BinanceApi(baseUrl: BASE_URL, apiKey: '', privateKey: '');
+      //isPreviousOrderActive();
     } catch (error) {
       throw Exception('Failed initializing the Binance API. Error: $error');
     }
   }
 
-  openOcoOrder({
-    required String symbol,
-    required double quantity,
-    required double targetPrice,
-    required double stopPrice,
-  }) async {
+  openOcoOrder() async {
     await updateAPIKeys();
+
+    double price = await getCurrentBTCPrice();
+    double quantity = await getFreeBTCQuantity();
+    double targetPrice = price * 1.003;
+    double stopPrice = price * 0.99;
 
     try {
       final result = await _binanceApi.postHttp('/api/v3/order/oco', {
-        'symbol': symbol,
+        'symbol': 'BTCUSDT',
         'side': 'SELL',
-        'quantity': quantity.toStringAsFixed(2),
+        'quantity': quantity.toString(),
         'price': targetPrice.toStringAsFixed(2),
         'stopPrice': stopPrice.toStringAsFixed(2),
-        'stopLimitPrice': (stopPrice - 1.0).toStringAsFixed(2),
+        'stopLimitPrice': (stopPrice - 100.0).toStringAsFixed(2),
         'stopLimitTimeInForce': 'GTC',
       });
 
       if (result.statusCode == 200) {
         final response = jsonDecode(result.body);
-        return response['clientOrderId'].toString();
+
+        await _storage.write(ORDER_ENTRY_PRICE, price.toString());
+        await _storage.write(
+            ORDER_STORAGE_ID, response['orderListId'].toString());
+        await _storage.write(ORDER_STORAGE_STATUS, true);
+
+        return response['orderListId'].toString();
       } else {
         throw Exception('Failed to open OCO order: ${result.body}');
       }
@@ -51,7 +58,9 @@ class BinanceService {
 
   getFreeBTCQuantity() async {
     try {
-      final result = await _binanceApi.getHttp('/api/v3/account', {});
+      Map<String, String> getParameters = {};
+      final result =
+          await _binanceApi.getHttp('/api/v3/account', getParameters);
       if (result.statusCode == 200) {
         final response = jsonDecode(result.body);
         final free = response['balances']
@@ -59,42 +68,37 @@ class BinanceService {
         return double.parse(free);
       } else {
         throw Exception(
-            'Failed to retrieve free bitcoin quantity. Response status: ${result.statusCode}');
+            'Failed to retrieve free bitcoin quantity. Response status: ${result.body}');
       }
     } catch (error) {
       rethrow;
     }
   }
 
-  getCurrentBTCPrice() async {
-    String url = 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT';
-    var response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      Map data = jsonDecode(response.body);
-      return double.parse(data['price']);
-    } else {
-      throw Exception('Failed to retrieve current price');
-    }
-  }
+  isPreviousOrderActive() async {
+    await updateAPIKeys();
 
-  isOcoOrderActive(String clientOrderId) async {
+    String previousOrderId = await _storage.read(ORDER_STORAGE_ID) ?? 'NOTHING';
+
     Map<String, String> getParameters = {};
-    getParameters['recvWindow'] = '10000';
-    getParameters['symbol'] = '';
-    getParameters['orderId'] = '';
-    getParameters['origClientOrderId'] = clientOrderId;
+    final result =
+        await _binanceApi.getHttp('/api/v3/openOrders', getParameters);
 
-    final result = await _binanceApi.getHttp('/api/v3/order', getParameters);
     if (result.statusCode == 200) {
       final response = jsonDecode(result.body);
-      final status = response['status'] as String;
-      if (status == 'FILLED' || status == 'CANCELED' || status == 'EXPIRED') {
-        return false;
-      } else {
-        return true;
+
+      // loop through the response list and check if any order has the same orderListId
+      for (var order in response) {
+        String orderID = order['orderListId'].toString();
+        //print("ID IS ${order['orderListId']} and MY PVALUE IS $previousOrderId");
+        if ( orderID == previousOrderId) {
+          return true; // found an open order with the same orderListId
+        }
       }
+      return false; // no open order with the same orderListId
     } else {
-      return false;
+      throw Exception(
+          'Failed to get open orders ${result.body}, ${result.request}');
     }
   }
 
@@ -131,27 +135,6 @@ class BinanceService {
     }
   }
 
-  buyBTC() async {
-    // set the request parameters
-    Map<String, String> postParameters = {};
-    postParameters['recvWindow'] = '10000';
-    postParameters['symbol'] = 'BTC$TARGET_STABLE_COIN';
-    postParameters['quantity'] = 'all';
-    postParameters['side'] = 'BUY';
-    postParameters['type'] = 'MARKET';
-
-    try {
-      final buyResponse =
-          await _binanceApi.postHttp('/api/v3/order', postParameters);
-      if (buyResponse.statusCode != 200) {
-        throw Exception('Failed to buy BTC. ${buyResponse.body}');
-      }
-      return true;
-    } catch (error) {
-      rethrow;
-    }
-  }
-
   cancelOrder(String orderId) async {
     // Make the API call to cancel the order
     try {
@@ -169,6 +152,21 @@ class BinanceService {
     } catch (e) {
       // Handle exceptions thrown by the API call
       print(e);
+    }
+  }
+
+  getCurrentBTCPrice() async {
+    try {
+      String url = 'https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT';
+      var response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        Map data = jsonDecode(response.body);
+        return double.parse(data['price']);
+      } else {
+        throw Exception('Failed to retrieve current price');
+      }
+    } catch (error) {
+      rethrow;
     }
   }
 }

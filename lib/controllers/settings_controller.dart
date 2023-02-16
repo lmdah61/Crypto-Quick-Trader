@@ -9,6 +9,7 @@ class SettingsController extends GetxController {
   final apiKey = "".obs;
   final apiSecret = "".obs;
 
+
   GetStorage storage = GetStorage();
 
   @override

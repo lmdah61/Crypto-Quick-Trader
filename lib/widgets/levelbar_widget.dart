@@ -23,9 +23,9 @@ class LevelBar extends GetWidget<HomeController> {
   }
 
   _getCurrentPrice() async {
-    await controller.isThereAnOrderStillRunning();
+    //await controller.isThereAnOrderStillRunning();
     _currentPrice.value = await controller.getCurrentPrice();
-    Future.delayed(const Duration(seconds: 3), _getCurrentPrice);
+    Future.delayed(const Duration(seconds: 1), _getCurrentPrice);
   }
 
   @override
@@ -40,26 +40,26 @@ class LevelBar extends GetWidget<HomeController> {
                 Row(
                   children: [
                     Text(
-                      controller.stopValue.value.toStringAsFixed(2),
+                      controller.stopPrice.value.toStringAsFixed(2),
                       style: const TextStyle(color: Colors.red),
                     ),
                     const Spacer(),
                     Text(
-                      _currentPrice.toStringAsFixed(2),
+                      controller.initPrice.value.toStringAsFixed(2),
                       style: TextStyle(color: progressColor()),
                     ),
                     const Spacer(),
                     Text(
-                      controller.targetValue.value.toStringAsFixed(2),
+                      controller.targetPrice.value.toStringAsFixed(2),
                       style: const TextStyle(color: Colors.green),
                     ),
                   ],
                 ),
                 FAProgressBar(
                   maxValue:
-                      controller.targetValue.value - controller.stopValue.value,
+                      controller.targetPrice.value - controller.stopPrice.value,
                   currentValue:
-                      (_currentPrice.value - controller.stopValue.value),
+                      (_currentPrice.value - controller.stopPrice.value),
                   animatedDuration: const Duration(milliseconds: 500),
                   displayText: getDisplayText(),
                   progressColor: progressColor(),

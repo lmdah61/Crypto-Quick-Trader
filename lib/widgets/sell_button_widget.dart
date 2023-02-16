@@ -15,6 +15,11 @@ class SellCoinsButton extends GetWidget<HomeController> {
         width: 120,
         child: ElevatedButton(
           style: ButtonStyle(
+            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+              RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0),
+              ),
+            ),
             backgroundColor: MaterialStateProperty.resolveWith(
               (states) => states.contains(MaterialState.pressed) ||
                       !controller.isOrderActive.value

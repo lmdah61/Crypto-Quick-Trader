@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -6,51 +8,36 @@ import '../utils/constants.dart';
 
 class HomeController extends GetxController {
   var storage = GetStorage();
-  final BinanceService _binanceService = BinanceService();
+  late BinanceService _binanceService = BinanceService();
 
+  //var disableOrderButton = true.obs;
   var isOrderActive = false.obs;
   var activeOrderId = '';
 
   var initPrice = 0.0.obs;
-  var targetValue = 0.0.obs;
-  var stopValue = 0.0.obs;
+  var targetPrice = 0.0.obs;
+  var stopPrice = 0.0.obs;
 
-  init() async {
-    // Check if an order is already active
-    isThereAnOrderStillRunning();
-  }
-
-  isThereAnOrderStillRunning() async {
-    await loadOrderData();
-    bool orderIsRunning = await _binanceService.isOcoOrderActive(activeOrderId);
-    if (!orderIsRunning) {
-      clean();
-    }
+  @override
+  onInit() async {
+    super.onInit();
+    //_binanceService.isPreviousOrderActive();
+    Timer(Duration(seconds: 3), () {
+      print("This line is printed after 3 seconds");
+      isPreviousOrderRunning();
+    });
+    //loadOrderData();
   }
 
   openOrder() async {
-    await _binanceService.updateAPIKeys();
-    double price = await _binanceService.getCurrentBTCPrice();
-    double quantity = await _binanceService.getFreeBTCQuantity();
-    var orderId = await _binanceService.openOcoOrder(
-      symbol: 'BTCUSDT',
-      quantity: quantity,
-      targetPrice: price * 1.003,
-      stopPrice: price * 0.99,
-    );
+    var orderId = await _binanceService.openOcoOrder();
 
-    initPrice.value = price;
-    targetValue.value = price * 1.003;
-    stopValue.value = price * 0.99;
+    //set up the levelbar values
+    initPrice.value = await storage.read(ORDER_ENTRY_PRICE);
+    targetPrice.value = initPrice.value * TARGET;
+    stopPrice.value = initPrice.value * STOP_LOSS;
 
-    activeOrderId = orderId;
     isOrderActive.value = true;
-    storeOrderData();
-  }
-
-  storeOrderData() async {
-    storage.write(ORDER_STORAGE_ID, activeOrderId);
-    storage.write(ORDER_STORAGE_STATUS, isOrderActive.value);
   }
 
   loadOrderData() async {
@@ -60,23 +47,29 @@ class HomeController extends GetxController {
 
   sellEverything() async {
     await _binanceService.sellAllBTC();
-    clean();
+    isOrderActive.value = false;
+    storage.write(ORDER_STORAGE_ID,'');
   }
 
   cancelOrder() async {
     await _binanceService.cancelOrder(activeOrderId);
-    clean();
-  }
-
-  void clean() {
     isOrderActive.value = false;
-    activeOrderId = '';
-    storeOrderData();
+    storage.write(ORDER_STORAGE_ID,'');
   }
 
   getCurrentPrice() async {
     return await _binanceService.getCurrentBTCPrice();
   }
 
+  isPreviousOrderRunning() async {
+    bool previousOrderIsActive = await _binanceService.isPreviousOrderActive();
+    if (previousOrderIsActive) {
+      isOrderActive.value = true;
+      activeOrderId = storage.read(ORDER_STORAGE_ID) ?? '';
 
+      initPrice.value = double.parse(storage.read(ORDER_ENTRY_PRICE).toString());
+      targetPrice.value = initPrice * TARGET;
+      stopPrice.value = initPrice * STOP_LOSS;
+    }
+  }
 }

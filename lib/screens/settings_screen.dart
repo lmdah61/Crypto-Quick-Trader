@@ -39,23 +39,31 @@ class SettingsScreen extends GetView<SettingsController> {
               onChanged: (value) => controller.apiSecret.value = value,
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.resolveWith(
-                  (states) => states.contains(MaterialState.pressed) ||
-                          controller.isThereAnOrderStillRunning()
-                      ? null
-                      : Colors.orange,
+            SizedBox(
+              width: 120,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                    ),
+                  ),
+                  backgroundColor: MaterialStateProperty.resolveWith(
+                    (states) => states.contains(MaterialState.pressed) ||
+                            controller.isThereAnOrderStillRunning()
+                        ? null
+                        : Colors.orange,
+                  ),
                 ),
+                onPressed: controller.isThereAnOrderStillRunning()
+                    ? null
+                    : () async {
+                        // Cancel Order and sell the coins
+                        controller.saveSettings();
+                        Get.snackbar("Notification", "API data saved",);
+                      },
+                child: Text("Save"),
               ),
-              onPressed: controller.isThereAnOrderStillRunning()
-                  ? null
-                  : () async {
-                      // Cancel Order and sell the coins
-                      controller.saveSettings();
-                      Get.snackbar("Notification", "API data saved",);
-                    },
-              child: Text("Save"),
             ),
           ],
         ),

@@ -12,6 +12,8 @@ const String ORDER_STORAGE_ID = 'order_id';
 
 const String ORDER_STORAGE_STATUS = 'order_status';
 
+const String ORDER_ENTRY_PRICE = 'order_entry_price';
+
 const double TARGET = 1.003;
 
 const double STOP_LOSS = 0.99;
