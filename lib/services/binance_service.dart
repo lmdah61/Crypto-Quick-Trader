@@ -13,16 +13,16 @@ class BinanceService {
 
   BinanceService() {
     try {
-      _binanceApi = BinanceApi(baseUrl: BASE_URL, apiKey: '', privateKey: '');
-      //isPreviousOrderActive();
+      _binanceApi = BinanceApi(
+          baseUrl: 'testnet.binance.vision',
+          apiKey: API_KEY,
+          privateKey: API_SECRET);
     } catch (error) {
       throw Exception('Failed initializing the Binance API. Error: $error');
     }
   }
 
   openOcoOrder() async {
-    await updateAPIKeys();
-
     double price = await getCurrentBTCPrice();
     double quantity = await getFreeBTCQuantity();
     double targetPrice = price * 1.003;
@@ -30,6 +30,7 @@ class BinanceService {
 
     try {
       final result = await _binanceApi.postHttp('/api/v3/order/oco', {
+        'recvWindow': '10000',
         'symbol': 'BTCUSDT',
         'side': 'SELL',
         'quantity': quantity.toString(),
@@ -42,10 +43,9 @@ class BinanceService {
       if (result.statusCode == 200) {
         final response = jsonDecode(result.body);
 
-        await _storage.write(ORDER_ENTRY_PRICE, price.toString());
+        await _storage.write(STORAGE_ORDER_ENTRY_PRICE, price.toString());
         await _storage.write(
-            ORDER_STORAGE_ID, response['orderListId'].toString());
-        await _storage.write(ORDER_STORAGE_STATUS, true);
+            STORAGE_ORDER_ID, response['orderListId'].toString());
 
         return response['orderListId'].toString();
       } else {
@@ -76,11 +76,10 @@ class BinanceService {
   }
 
   isPreviousOrderActive() async {
-    await updateAPIKeys();
-
-    String previousOrderId = await _storage.read(ORDER_STORAGE_ID) ?? 'NOTHING';
+    String previousOrderId = _storage.read(STORAGE_ORDER_ID).toString();
 
     Map<String, String> getParameters = {};
+    getParameters['recvWindow'] = '10000';
     final result =
         await _binanceApi.getHttp('/api/v3/openOrders', getParameters);
 
@@ -91,7 +90,7 @@ class BinanceService {
       for (var order in response) {
         String orderID = order['orderListId'].toString();
         //print("ID IS ${order['orderListId']} and MY PVALUE IS $previousOrderId");
-        if ( orderID == previousOrderId) {
+        if (orderID == previousOrderId) {
           return true; // found an open order with the same orderListId
         }
       }
@@ -102,23 +101,13 @@ class BinanceService {
     }
   }
 
-  updateAPIKeys() async {
-    try {
-      _binanceApi.apiKey = _storage.read(API_KEY_STORAGE_ID) ?? '';
-      _binanceApi.privateKey = _storage.read(API_SECRET_STORAGE_ID) ?? '';
-    } catch (error) {
-      throw Exception(
-          'Failed to configure your Binance API Keys. Error: $error');
-    }
-  }
-
   sellAllBTC() async {
     double quantity = await getFreeBTCQuantity();
 
     // set the request parameters
     Map<String, String> postParameters = {};
     postParameters['recvWindow'] = '10000';
-    postParameters['symbol'] = 'BTC$TARGET_STABLE_COIN';
+    postParameters['symbol'] = 'BTC$STABLE_COIN';
     postParameters['quantity'] = quantity.toStringAsFixed(8);
     postParameters['side'] = 'SELL';
     postParameters['type'] = 'MARKET';

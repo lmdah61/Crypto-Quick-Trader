@@ -20,12 +20,16 @@ class OpenOrderButton extends GetWidget<HomeController> {
             ),
             backgroundColor: MaterialStateProperty.resolveWith(
               (states) => states.contains(MaterialState.pressed) ||
-                      controller.isOrderActive.value
+                  controller.isOrderActive.value
+                  ||
+                  !controller.enableOrderButton.value
                   ? null
                   : Colors.orange,
             ),
           ),
           onPressed: controller.isOrderActive.value
+              ||
+              !controller.enableOrderButton.value
               ? null
               : () async {
                   // Open main order

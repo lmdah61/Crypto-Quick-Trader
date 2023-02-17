@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:get/get.dart';
-
 import '../controllers/home_controller.dart';
 
 class LevelBar extends GetWidget<HomeController> {
-
   final _currentPrice = 0.0.obs;
 
   getDisplayText() {
@@ -25,12 +23,11 @@ class LevelBar extends GetWidget<HomeController> {
   _getCurrentPrice() async {
     //await controller.isThereAnOrderStillRunning();
     _currentPrice.value = await controller.getCurrentPrice();
-    Future.delayed(const Duration(seconds: 1), _getCurrentPrice);
+    Future.delayed( Duration(seconds: 1), _getCurrentPrice);
   }
 
   @override
   Widget build(BuildContext context) {
-
     _getCurrentPrice();
 
     return Obx(
@@ -67,7 +64,7 @@ class LevelBar extends GetWidget<HomeController> {
                 ),
               ],
             )
-          : const SizedBox(),
+          : SizedBox(),
     );
   }
 }

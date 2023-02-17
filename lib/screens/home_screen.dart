@@ -16,18 +16,10 @@ class HomeScreen extends GetView {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Crypto Quick Trader'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Get.toNamed('/settings');
-            },
-          ),
-        ],
       ),
       body: Column(
         children: [
-          const Expanded(child: BinanceChart()),
+          Expanded(child: BinanceChart()),
           LevelBar(),
         ],
       ),

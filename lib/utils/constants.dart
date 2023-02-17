@@ -1,29 +1,13 @@
-const String STABLE_COIN = "USDT";
+const String STABLE_COIN = 'USDT'; // target stable coin
 
-const String BASE_URL = 'testnet.binance.vision';
+const String STORAGE_ORDER_ID = 'order_id';
 
-const String TARGET_STABLE_COIN = 'USDT'; // Everything will be sold to USDT
+const String STORAGE_ORDER_ENTRY_PRICE = 'order_entry_price';
 
-const String API_KEY_STORAGE_ID = 'api_key';
+const double TARGET = 1.003; // 0,3%
 
-const String API_SECRET_STORAGE_ID = 'api_secret';
+const double STOP_LOSS = 0.99; // -1%
 
-const String ORDER_STORAGE_ID = 'order_id';
+const String API_KEY = 'AIVXCSIU0URsFcNxH7iAWvjxRTwGH4c5mudTuxJMYa9xgcAKDBfQUVJ9Ti8CySlP';
 
-const String ORDER_STORAGE_STATUS = 'order_status';
-
-const String ORDER_ENTRY_PRICE = 'order_entry_price';
-
-const double TARGET = 1.003;
-
-const double STOP_LOSS = 0.99;
-
-class Constants {
-  static final String appName = 'Bitcoin Price Chart';
-  static final String chartTitle = '5 minute bitcoin price chart';
-  static final String buyButtonText = 'Buy now';
-  static final String loginRoute = '/login';
-  static final String signupRoute = '/signup';
-  static final String homeRoute = '/home';
-  static final String settingsRoute = '/settings';
-}
+const String API_SECRET = '9QGCKNO3YkBkblRbBwj5Dvxfq3sPdevVNgqzksFNLrW2ycz4c5IBbuESlfb0IqWG';
