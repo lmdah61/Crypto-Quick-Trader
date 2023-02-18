@@ -3,12 +3,13 @@ import 'package:get/get.dart';
 
 import '../controllers/home_controller.dart';
 
-class CancelOrderButton extends GetWidget<HomeController> {
+class CancelOrderButton extends GetWidget {
   const CancelOrderButton({super.key});
 
   @override
   Widget build(BuildContext context) {
     //final isOrderActive = controller.isOrderActive.value;
+    HomeController controller = Get.find();
 
     return Obx(
       () => SizedBox(

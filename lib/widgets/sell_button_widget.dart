@@ -3,12 +3,13 @@ import 'package:get/get.dart';
 
 import '../controllers/home_controller.dart';
 
-class SellCoinsButton extends GetWidget<HomeController> {
+class SellCoinsButton extends GetWidget {
   const SellCoinsButton({super.key});
 
   @override
   Widget build(BuildContext context) {
     //final isOrderActive = false;
+    HomeController controller = Get.find();
 
     return Obx(
       () => SizedBox(

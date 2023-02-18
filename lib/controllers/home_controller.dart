@@ -23,22 +23,22 @@ class HomeController extends GetxController {
     super.onInit();
     //await isPreviousOrderRunning();
     //_binanceService.isPreviousOrderActive();
-    Timer(Duration(seconds: 3), () {
-      //isPreviousOrderRunning();
+    Timer(Duration(seconds: 3), () async {
+      await isPreviousOrderRunning();
       enableOrderButton.value = true;
     });
     //loadOrderData();
   }
 
-  openOrder() {
-    // _binanceService.openOcoOrder();
-    //
-    // //set up the levelbar values
-    // initPrice.value = double.parse(storage.read(STORAGE_ORDER_ENTRY_PRICE));
-    // targetPrice.value = initPrice.value * TARGET;
-    // stopPrice.value = initPrice.value * STOP_LOSS;
-    //
-    // isOrderActive.value = true;
+  openOrder() async {
+    await _binanceService.openOrder();
+
+    //set up the levelbar values
+    initPrice.value = double.parse(storage.read(STORAGE_ORDER_ENTRY_PRICE));
+    targetPrice.value = initPrice.value * TARGET;
+    stopPrice.value = initPrice.value * STOP_LOSS;
+
+    isOrderActive.value = true;
   }
 
   // loadOrderData() {
@@ -46,14 +46,14 @@ class HomeController extends GetxController {
   //   isOrderActive.value = storage.read(STORAGE_ORDER_STATUS) ?? false;
   // }
 
-  sellEverything() {
-    _binanceService.sellAllBTC();
+  sellEverything() async {
+    await _binanceService.sellAllBTC();
     isOrderActive.value = false;
     storage.write(STORAGE_ORDER_ID, '');
   }
 
-  cancelOrder() {
-    _binanceService.cancelOrder(activeOrderId);
+  cancelOrder() async {
+    await _binanceService.cancelAllOrders();
     isOrderActive.value = false;
     storage.write(STORAGE_ORDER_ID, '');
   }
@@ -63,8 +63,8 @@ class HomeController extends GetxController {
     return price;
   }
 
-  isPreviousOrderRunning() {
-    bool previousOrderIsActive = _binanceService.isPreviousOrderActive();
+  isPreviousOrderRunning() async {
+    bool previousOrderIsActive = await _binanceService.isPreviousOrderActive();
     if (previousOrderIsActive) {
       isOrderActive.value = true;
       activeOrderId = storage.read(STORAGE_ORDER_ID).toString();

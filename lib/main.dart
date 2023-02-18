@@ -1,26 +1,26 @@
 import 'dart:async';
 
-import 'package:crypto_quick_trader/routes.dart';
+import 'package:crypto_quick_trader/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import 'bindings.dart';
+import 'controllers/home_controller.dart';
 
-void main() {
+main() {
   runZonedGuarded(
     () {
+      Get.put(HomeController());
       runApp(
         GetMaterialApp(
           debugShowCheckedModeBanner: false,
           theme: ThemeData.light(),
           darkTheme: ThemeData.dark(),
-          initialBinding: HomeScreenBindings(),
-          initialRoute: '/',
-          getPages: Routes.pages,
+          home: HomeScreen(),
         ),
       );
     },
     (Object error, StackTrace stackTrace) {
+      // Show an alert dialog when an error occurs
       Get.dialog(
         AlertDialog(
           title: const Text('An error occurred'),

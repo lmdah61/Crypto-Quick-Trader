@@ -3,8 +3,10 @@ import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.da
 import 'package:get/get.dart';
 import '../controllers/home_controller.dart';
 
-class LevelBar extends GetWidget<HomeController> {
+class LevelBar extends GetWidget {
   final _currentPrice = 0.0.obs;
+
+  HomeController controller = Get.find();
 
   getDisplayText() {
     double currentPercentage =
@@ -21,7 +23,6 @@ class LevelBar extends GetWidget<HomeController> {
   }
 
   _getCurrentPrice() async {
-    //await controller.isThereAnOrderStillRunning();
     _currentPrice.value = await controller.getCurrentPrice();
     Future.delayed( Duration(seconds: 1), _getCurrentPrice);
   }

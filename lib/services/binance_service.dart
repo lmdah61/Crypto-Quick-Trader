@@ -22,7 +22,7 @@ class BinanceService {
     }
   }
 
-  openOcoOrder() async {
+  openOrder() async {
     double price = await getCurrentBTCPrice();
     double quantity = await getFreeBTCQuantity();
     double targetPrice = price * 1.003;
@@ -102,6 +102,7 @@ class BinanceService {
   }
 
   sellAllBTC() async {
+    await cancelAllOrders();
     double quantity = await getFreeBTCQuantity();
 
     // set the request parameters
@@ -124,23 +125,20 @@ class BinanceService {
     }
   }
 
-  cancelOrder(String orderId) async {
+  cancelAllOrders() async {
     // Make the API call to cancel the order
+    Map<String, String> deleteParameters = {};
+    deleteParameters['recvWindow'] = '10000';
     try {
-      final response = await http.delete(
-        'https://api.binance.com/api/v3/order/$orderId' as Uri,
-      );
-
-      if (response.statusCode == 200) {
-        // Order cancellation was successful
-        print('Order cancellation successful');
-      } else {
-        // Handle the error case
-        throw Exception('Failed to cancel order');
+      final deleteResponse =
+          await _binanceApi.deleteHttp('/api/v3/openOrders', deleteParameters);
+      if (deleteResponse.statusCode != 200) {
+        throw Exception('Failed to cancel your Orders. ${deleteResponse.body}');
       }
-    } catch (e) {
-      // Handle exceptions thrown by the API call
-      print(e);
+      await _storage.write(STORAGE_ORDER_ID, '');
+      return true;
+    } catch (error) {
+      rethrow;
     }
   }
 

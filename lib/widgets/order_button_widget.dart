@@ -3,11 +3,13 @@ import 'package:get/get.dart';
 
 import '../controllers/home_controller.dart';
 
-class OpenOrderButton extends GetWidget<HomeController> {
+class OpenOrderButton extends GetWidget {
   const OpenOrderButton({super.key});
 
   @override
   Widget build(BuildContext context) {
+    HomeController controller = Get.find();
+
     return Obx(
       () => SizedBox(
         width: 120,
@@ -20,16 +22,14 @@ class OpenOrderButton extends GetWidget<HomeController> {
             ),
             backgroundColor: MaterialStateProperty.resolveWith(
               (states) => states.contains(MaterialState.pressed) ||
-                  controller.isOrderActive.value
-                  ||
-                  !controller.enableOrderButton.value
+                      controller.isOrderActive.value ||
+                          !controller.enableOrderButton.value
                   ? null
                   : Colors.orange,
             ),
           ),
-          onPressed: controller.isOrderActive.value
-              ||
-              !controller.enableOrderButton.value
+          onPressed: controller.isOrderActive.value ||
+                  !controller.enableOrderButton.value
               ? null
               : () async {
                   // Open main order

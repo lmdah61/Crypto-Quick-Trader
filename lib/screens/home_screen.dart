@@ -1,4 +1,3 @@
-import 'package:crypto_quick_trader/controllers/home_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -13,6 +12,7 @@ class HomeScreen extends GetView {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Crypto Quick Trader'),
