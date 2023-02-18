@@ -23,6 +23,7 @@ class BinanceService {
   }
 
   openOrder() async {
+    await buyBTC();
     double price = await getCurrentBTCPrice();
     double quantity = await getFreeBTCQuantity();
     double targetPrice = price * 1.003;
@@ -75,6 +76,25 @@ class BinanceService {
     }
   }
 
+  getFreeUSDTQuantity() async {
+    try {
+      Map<String, String> getParameters = {};
+      final result =
+      await _binanceApi.getHttp('/api/v3/account', getParameters);
+      if (result.statusCode == 200) {
+        final response = jsonDecode(result.body);
+        final free = response['balances']
+            .firstWhere((balance) => balance['asset'] == '$STABLE_COIN')['free'];
+        return double.parse(free);
+      } else {
+        throw Exception(
+            'Failed to retrieve free stable coin quantity. Response status: ${result.body}');
+      }
+    } catch (error) {
+      rethrow;
+    }
+  }
+
   isPreviousOrderActive() async {
     String previousOrderId = _storage.read(STORAGE_ORDER_ID).toString();
 
@@ -101,6 +121,29 @@ class BinanceService {
     }
   }
 
+  buyBTC() async {
+    var quantity = await getFreeUSDTQuantity();
+
+    // set the request parameters
+    Map<String, String> postParameters = {};
+    postParameters['recvWindow'] = '10000';
+    postParameters['symbol'] = 'BTC$STABLE_COIN';
+    postParameters['quoteOrderQty'] = quantity.toStringAsFixed(8);
+    postParameters['side'] = 'BUY';
+    postParameters['type'] = 'MARKET';
+
+    try {
+      final sellResponse =
+          await _binanceApi.postHttp('/api/v3/order', postParameters);
+      if (sellResponse.statusCode != 200) {
+        throw Exception('Failed to buy BTC. ${sellResponse.body}');
+      }
+      return true;
+    } catch (error) {
+      rethrow;
+    }
+  }
+
   sellAllBTC() async {
     await cancelAllOrders();
     double quantity = await getFreeBTCQuantity();
@@ -115,7 +158,7 @@ class BinanceService {
 
     try {
       final sellResponse =
-          await _binanceApi.postHttp('/api/v3/order', postParameters);
+      await _binanceApi.postHttp('/api/v3/order', postParameters);
       if (sellResponse.statusCode != 200) {
         throw Exception('Failed to sell your BTC. ${sellResponse.body}');
       }
@@ -125,10 +168,12 @@ class BinanceService {
     }
   }
 
+
   cancelAllOrders() async {
     // Make the API call to cancel the order
     Map<String, String> deleteParameters = {};
     deleteParameters['recvWindow'] = '10000';
+    deleteParameters['symbol'] = 'BTC$STABLE_COIN';
     try {
       final deleteResponse =
           await _binanceApi.deleteHttp('/api/v3/openOrders', deleteParameters);

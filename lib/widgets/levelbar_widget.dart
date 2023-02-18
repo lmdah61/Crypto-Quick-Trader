@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animation_progress_bar/flutter_animation_progress_bar.dart';
 import 'package:get/get.dart';
+
 import '../controllers/home_controller.dart';
 
 class LevelBar extends GetWidget {
@@ -24,7 +25,7 @@ class LevelBar extends GetWidget {
 
   _getCurrentPrice() async {
     _currentPrice.value = await controller.getCurrentPrice();
-    Future.delayed( Duration(seconds: 1), _getCurrentPrice);
+    Future.delayed(Duration(seconds: 1), _getCurrentPrice);
   }
 
   @override
@@ -61,7 +62,6 @@ class LevelBar extends GetWidget {
                   animatedDuration: const Duration(milliseconds: 500),
                   displayText: getDisplayText(),
                   progressColor: progressColor(),
-                  //displayCurrentValue: false,
                 ),
               ],
             )
