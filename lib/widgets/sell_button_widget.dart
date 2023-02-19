@@ -36,7 +36,7 @@ class SellCoinsButton extends GetWidget {
                   Get.snackbar("Notification", "Sell Order",
                       backgroundColor: Colors.green);
                 },
-          child: Text("Sell Order"),
+          child: Text("Sell Coins"),
         ),
       ),
     );
