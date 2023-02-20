@@ -19,7 +19,7 @@ class HomeScreen extends GetView {
       ),
       body: Column(
         children: [
-          Expanded(child: BinanceChart()),
+          BinanceChart(),
           LevelBar(),
         ],
       ),

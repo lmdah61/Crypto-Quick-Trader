@@ -13,3 +13,6 @@ const double STOP_LOSS = 0.99; // -1%
 const String STORAGE_ORDER_ID = 'order_id';
 
 const String STORAGE_ORDER_ENTRY_PRICE = 'order_entry_price';
+
+const String BASE_URL =
+    'testnet.binance.vision';

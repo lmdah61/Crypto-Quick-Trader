@@ -57,7 +57,7 @@ class BinanceChart extends StatelessWidget {
     controller.loadRequest(Uri.dataFromString(embeddedCode,
         mimeType: 'text/html', encoding: Encoding.getByName('utf-8')));
 
-    return WebViewWidget(controller: controller);
+    return Expanded(child: WebViewWidget(controller: controller));
     //WebViewWidget(controller: controller);
   }
 }

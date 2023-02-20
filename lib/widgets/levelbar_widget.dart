@@ -54,14 +54,16 @@ class LevelBar extends GetWidget {
                     ),
                   ],
                 ),
-                FAProgressBar(
-                  maxValue:
-                      controller.targetPrice.value - controller.stopPrice.value,
-                  currentValue:
-                      (_currentPrice.value - controller.stopPrice.value),
-                  animatedDuration: const Duration(milliseconds: 500),
-                  displayText: getDisplayText(),
-                  progressColor: progressColor(),
+                SizedBox(
+                  child: FAProgressBar(
+                    maxValue:
+                        controller.targetPrice.value - controller.stopPrice.value,
+                    currentValue:
+                        (_currentPrice.value - controller.stopPrice.value),
+                    animatedDuration: const Duration(milliseconds: 500),
+                    displayText: getDisplayText(),
+                    progressColor: progressColor(),
+                  ),
                 ),
               ],
             )

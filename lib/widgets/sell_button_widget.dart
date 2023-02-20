@@ -8,13 +8,21 @@ class SellCoinsButton extends GetWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final isOrderActive = false;
     HomeController controller = Get.find();
 
     return Obx(
-      () => SizedBox(
+          () => Container(
         width: 120,
-        child: ElevatedButton(
+        height: 40,
+        child: controller.isLoadingSell.value
+            ? Center(
+              child: const SizedBox(
+          height: 24,
+          width: 24,
+          child: CircularProgressIndicator(),
+        ),
+            )
+            : ElevatedButton(
           style: ButtonStyle(
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
@@ -22,20 +30,22 @@ class SellCoinsButton extends GetWidget {
               ),
             ),
             backgroundColor: MaterialStateProperty.resolveWith(
-              (states) => states.contains(MaterialState.pressed) ||
-                      !controller.isOrderActive.value
+                  (states) => states.contains(MaterialState.pressed) ||
+                  !controller.isOrderActive.value ||
+                      controller.isLoadingCancel.value
                   ? null
                   : Colors.green,
             ),
           ),
-          onPressed: !controller.isOrderActive.value
+          onPressed: !controller.isOrderActive.value ||
+              controller.isLoadingCancel.value
               ? null
               : () async {
-                  // Cancel Order and sell the coins
-                  await controller.sellEverything();
-                  Get.snackbar("Notification", "Sell Order",
-                      backgroundColor: Colors.green);
-                },
+            // Cancel Order and sell the coins
+            await controller.sellEverything();
+            Get.snackbar("Notification", "Sell Order",
+                backgroundColor: Colors.green);
+          },
           child: Text("Sell Coins"),
         ),
       ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../controllers/home_controller.dart';
-
 class OpenOrderButton extends GetWidget {
   const OpenOrderButton({super.key});
 
@@ -11,9 +10,18 @@ class OpenOrderButton extends GetWidget {
     HomeController controller = Get.find();
 
     return Obx(
-      () => SizedBox(
+          () => Container(
         width: 120,
-        child: ElevatedButton(
+        height: 40,
+        child: controller.isLoadingOrder.value
+            ? const Center(
+          child: SizedBox(
+            height: 24,
+            width: 24,
+            child: CircularProgressIndicator(),
+          ),
+        )
+            : ElevatedButton(
           style: ButtonStyle(
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
@@ -21,22 +29,22 @@ class OpenOrderButton extends GetWidget {
               ),
             ),
             backgroundColor: MaterialStateProperty.resolveWith(
-              (states) => states.contains(MaterialState.pressed) ||
-                      controller.isOrderActive.value ||
-                          !controller.enableOrderButton.value
+                  (states) => states.contains(MaterialState.pressed) ||
+                  controller.isOrderActive.value ||
+                  !controller.enableOrderButton.value
                   ? null
                   : Colors.orange,
             ),
           ),
           onPressed: controller.isOrderActive.value ||
-                  !controller.enableOrderButton.value
+              !controller.enableOrderButton.value
               ? null
               : () async {
-                  // Open main order
-                  await controller.openOrder();
-                  Get.snackbar("Notification", "Open Order",
-                      backgroundColor: Colors.orange);
-                },
+            // Open main order
+            await controller.openOrder();
+            Get.snackbar("Notification", "Open Order",
+                backgroundColor: Colors.orange);
+          },
           child: const Text("Open Order"),
         ),
       ),

@@ -8,36 +8,45 @@ class CancelOrderButton extends GetWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final isOrderActive = controller.isOrderActive.value;
     HomeController controller = Get.find();
 
     return Obx(
-      () => SizedBox(
+      () => Container(
         width: 120,
-        child: ElevatedButton(
-          style: ButtonStyle(
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(18.0),
+        height: 40,
+        child: controller.isLoadingCancel.value
+            ? Center(
+                child: const SizedBox(
+                  height: 24,
+                  width: 24,
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            : ElevatedButton(
+                style: ButtonStyle(
+                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),
+                    ),
+                  ),
+                  backgroundColor: MaterialStateProperty.resolveWith(
+                    (states) => states.contains(MaterialState.pressed) ||
+                            !controller.isOrderActive.value ||
+                            controller.isLoadingSell.value
+                        ? null
+                        : Colors.red,
+                  ),
+                ),
+                onPressed: !controller.isOrderActive.value ||
+                    controller.isLoadingSell.value
+                    ? null
+                    : () async {
+                        await controller.cancelOrder();
+                        Get.snackbar("Notification", "Cancel Order",
+                            backgroundColor: Colors.red);
+                      },
+                child: Text("Cancel Order"),
               ),
-            ),
-            backgroundColor: MaterialStateProperty.resolveWith(
-              (states) => states.contains(MaterialState.pressed) ||
-                      !controller.isOrderActive.value
-                  ? null
-                  : Colors.red,
-            ),
-          ),
-          onPressed: !controller.isOrderActive.value
-              ? null
-              : () async {
-                  await controller.cancelOrder();
-                  Get.snackbar("Notification", "Cancel Order",
-                      backgroundColor: Colors.red);
-                  // Cancel order and keep the coins
-                },
-          child: Text("Cancel Order"),
-        ),
       ),
     );
   }
