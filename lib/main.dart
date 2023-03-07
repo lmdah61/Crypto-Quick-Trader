@@ -15,24 +15,28 @@ main() {
           debugShowCheckedModeBanner: false,
           theme: ThemeData.light(),
           darkTheme: ThemeData.dark(),
-          home: HomeScreen(),
+          home: const HomeScreen(),
         ),
       );
     },
     (Object error, StackTrace stackTrace) {
       // Show an alert dialog when an error occurs
-      Get.dialog(
-        AlertDialog(
-          title: const Text('An error occurred'),
-          content: Text('The app encountered an error.\n\n$error'),
-          actions: [
-            TextButton(
-              child: const Text('Ok'),
-              onPressed: () => Get.back(),
-            ),
-          ],
-        ),
-      );
+      showDialog(error);
     },
+  );
+}
+
+showDialog(Object error) {
+  return Get.dialog(
+    AlertDialog(
+      title: const Text('An error occurred'),
+      content: Text('The app encountered an error.\n\n$error'),
+      actions: [
+        TextButton(
+          child: const Text('Ok'),
+          onPressed: () => Get.back(),
+        ),
+      ],
+    ),
   );
 }

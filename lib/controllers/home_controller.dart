@@ -7,15 +7,17 @@ import '../services/binance_service.dart';
 import '../utils/constants.dart';
 
 class HomeController extends GetxController {
-  var _storage = GetStorage();
+  final _storage = GetStorage();
   final _binanceService = BinanceService();
 
   var isLoadingOrder = false.obs;
   var isLoadingSell = false.obs;
   var isLoadingCancel = false.obs;
+
   var enableOrderButton = false.obs;
   var enableSellButton = false.obs;
   var enableCancelButton = false.obs;
+
   var isOrderActive = false.obs;
   var activeOrderId = '';
 
@@ -23,23 +25,13 @@ class HomeController extends GetxController {
   var targetPrice = 0.0.obs;
   var stopPrice = 0.0.obs;
 
-  // HomeController() {
-  //   isPreviousOrderRunning();
-  //   enableOrderButton.value = true;
-  // }
-
   @override
   onInit() {
     super.onInit();
-// await isPreviousOrderRunning();
-// enableOrderButton.value = true;
-//await isPreviousOrderRunning();
-//_binanceService.isPreviousOrderActive();
-    Timer(Duration(seconds: 3), () async {
+    Timer(const Duration(seconds: 3), () async {
       await isPreviousOrderRunning();
       enableOrderButton.value = true;
     });
-//loadOrderData();
   }
 
   openOrder() async {
@@ -47,13 +39,11 @@ class HomeController extends GetxController {
 
     await _binanceService.openOrder();
 
-//set up the levelbar values
     initPrice.value = double.parse(_storage.read(STORAGE_ORDER_ENTRY_PRICE));
     targetPrice.value = initPrice.value * TARGET;
     stopPrice.value = initPrice.value * STOP_LOSS;
 
     isOrderActive.value = true;
-
     isLoadingOrder.value = false;
   }
 
@@ -73,11 +63,6 @@ class HomeController extends GetxController {
     isLoadingCancel.value = false;
   }
 
-  getCurrentPrice() async {
-    var price = await _binanceService.getCurrentBTCPrice();
-    return price;
-  }
-
   isPreviousOrderRunning() async {
     var previousOrderIsActive = await _binanceService.isPreviousOrderActive();
     if (previousOrderIsActive) {
@@ -89,5 +74,10 @@ class HomeController extends GetxController {
       targetPrice.value = initPrice * TARGET;
       stopPrice.value = initPrice * STOP_LOSS;
     }
+  }
+
+  getCurrentPrice() async {
+    var price = await _binanceService.getCurrentBTCPrice();
+    return price;
   }
 }

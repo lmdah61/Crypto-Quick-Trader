@@ -9,7 +9,7 @@ import '../utils/constants.dart';
 class BinanceService {
   var _binanceApi;
 
-  GetStorage _storage = GetStorage();
+  final GetStorage _storage = GetStorage();
 
   BinanceService() {
     try {
@@ -21,7 +21,7 @@ class BinanceService {
   }
 
   openOrder() async {
-    await buyBTC();
+    //await buyBTC();
     var price = await getCurrentBTCPrice();
     var quantity = await getFreeBTCQuantity();
     var targetPrice = price * 1.003;
@@ -165,7 +165,8 @@ class BinanceService {
       postParameters['quantity'] = quantity.toStringAsFixed(8);
       postParameters['side'] = 'SELL';
       postParameters['type'] = 'MARKET';
-      final result = await _binanceApi.postHttp('/api/v3/order', postParameters);
+      final result =
+          await _binanceApi.postHttp('/api/v3/order', postParameters);
       if (result.statusCode == 200) {
         return true;
       } else {
@@ -181,7 +182,8 @@ class BinanceService {
       Map<String, String> deleteParameters = {};
       deleteParameters['recvWindow'] = '10000';
       deleteParameters['symbol'] = 'BTC$STABLE_COIN';
-      final result = await _binanceApi.deleteHttp('/api/v3/openOrders',deleteParameters);
+      final result =
+          await _binanceApi.deleteHttp('/api/v3/openOrders', deleteParameters);
       if (result.statusCode == 200) {
         await _storage.write(STORAGE_ORDER_ID, '');
         return true;

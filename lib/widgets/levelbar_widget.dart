@@ -4,15 +4,16 @@ import 'package:get/get.dart';
 
 import '../controllers/home_controller.dart';
 
-class LevelBar extends GetWidget {
-  final _currentPrice = 0.0.obs;
+class LevelBar extends StatelessWidget {
+  LevelBar({super.key});
 
-  HomeController controller = Get.find();
+  final HomeController controller = Get.find();
+  final _currentPrice = 0.0.obs;
 
   getDisplayText() {
     double currentPercentage =
         (_currentPrice / controller.initPrice.value - 1) * 100;
-    return ' USDT ' + currentPercentage.toStringAsFixed(2) + '%';
+    return ' USDT ${currentPercentage.toStringAsFixed(2)}%';
   }
 
   progressColor() {
@@ -23,14 +24,14 @@ class LevelBar extends GetWidget {
     return currentPercentage >= 0 ? Colors.green : Colors.red;
   }
 
-  _getCurrentPrice() async {
+  getCurrentPrice() async {
     _currentPrice.value = await controller.getCurrentPrice();
-    Future.delayed(Duration(seconds: 1), _getCurrentPrice);
+    Future.delayed(const Duration(seconds: 1), getCurrentPrice);
   }
 
   @override
   Widget build(BuildContext context) {
-    _getCurrentPrice();
+    getCurrentPrice();
 
     return Obx(
       () => controller.isOrderActive.value
@@ -56,8 +57,8 @@ class LevelBar extends GetWidget {
                 ),
                 SizedBox(
                   child: FAProgressBar(
-                    maxValue:
-                        controller.targetPrice.value - controller.stopPrice.value,
+                    maxValue: controller.targetPrice.value -
+                        controller.stopPrice.value,
                     currentValue:
                         (_currentPrice.value - controller.stopPrice.value),
                     animatedDuration: const Duration(milliseconds: 500),
@@ -67,7 +68,7 @@ class LevelBar extends GetWidget {
                 ),
               ],
             )
-          : SizedBox(),
+          : const SizedBox(),
     );
   }
 }

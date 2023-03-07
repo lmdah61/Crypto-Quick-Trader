@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 import '../controllers/home_controller.dart';
 
-class CancelOrderButton extends GetWidget {
+class CancelOrderButton extends StatelessWidget {
   const CancelOrderButton({super.key});
 
   @override
@@ -15,8 +15,8 @@ class CancelOrderButton extends GetWidget {
         width: 120,
         height: 40,
         child: controller.isLoadingCancel.value
-            ? Center(
-                child: const SizedBox(
+            ? const Center(
+                child: SizedBox(
                   height: 24,
                   width: 24,
                   child: CircularProgressIndicator(),
@@ -38,14 +38,14 @@ class CancelOrderButton extends GetWidget {
                   ),
                 ),
                 onPressed: !controller.isOrderActive.value ||
-                    controller.isLoadingSell.value
+                        controller.isLoadingSell.value
                     ? null
                     : () async {
                         await controller.cancelOrder();
-                        Get.snackbar("Notification", "Cancel Order",
+                        Get.snackbar("Notification", "Order canceled",
                             backgroundColor: Colors.red);
                       },
-                child: Text("Cancel Order"),
+                child: const Text("Cancel Order"),
               ),
       ),
     );
