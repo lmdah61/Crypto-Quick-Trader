@@ -1,16 +1,5 @@
-# crypto_quick_trader
+# Crypto Quick Trader
 
-A new Flutter project.
+Easy GUI to quickly place Bitcoin OCO orders in Binance
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![cqt](https://user-images.githubusercontent.com/123673560/223567843-0862f4d0-e655-47dd-b20e-23b3d80903e4.gif)
